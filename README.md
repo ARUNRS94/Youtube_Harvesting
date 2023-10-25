@@ -1,10 +1,10 @@
-##YouTube Data Harvesting and Warehousing Project
+## YouTube Data Harvesting and Warehousing Project
 
-##Project Overview
+## Project Overview
 
 This project involves creating a Streamlit application for harvesting and warehousing data from multiple YouTube channels. The application offers a user-friendly interface for users to access, analyze, and store data from these channels. The data is stored in a MySQL database for structured data and a MongoDB database for unstructured data. This README will guide you through the project's workflow and how to run it.
 
-##Technologies Used
+## Technologies Used
 
 Python
 MySQL
@@ -12,7 +12,7 @@ MongoDB
 Streamlit
 YouTube Data API
 
-##Project Structure
+## Project Structure
 
 - Homepage.py: This is the main Streamlit application that serves as the user interface. Users can interact with the application here.
 
@@ -24,7 +24,7 @@ YouTube Data API
 
 - config.py: Here, you'll set up API keys, database credentials, and other configuration options. Make sure to fill this file out before running the project.
 
-##Workflow
+## Workflow
 
 Data Harvesting:
 The application uses the YouTube Data API to fetch data from selected channels.
