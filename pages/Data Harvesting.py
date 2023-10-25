@@ -29,7 +29,7 @@ def mongodb_connection():
 
     return status, collection
 
-def get_channel_id(youtube, channel_name):
+def yt_channel_id(youtube, channel_name):
     request = youtube.search().list(
         q=channel_name,
         type="channel",
@@ -39,7 +39,7 @@ def get_channel_id(youtube, channel_name):
     response = request.execute()
     return response["items"][0]["id"]["channelId"]
 
-def get_channel_details(youtube, channel_id):
+def yt_channel_details(youtube, channel_id):
     request = youtube.channels().list(
         part="snippet,statistics",
         id=channel_id
@@ -47,7 +47,7 @@ def get_channel_details(youtube, channel_id):
     response = request.execute()
     return response
 
-def get_playlists(youtube, channel_id):
+def yt_playlists(youtube, channel_id):
     playlists = []
     playlist_ids = []
     next_page_token = None
@@ -68,7 +68,7 @@ def get_playlists(youtube, channel_id):
             break
     return playlists,playlist_ids
 
-def get_video_details_for_playlist(youtube, playlist_id):
+def yt_video_details(youtube, playlist_id):
     video_ids=[]
     next_page_token = None
     while True:
@@ -96,7 +96,7 @@ def get_video_detail(youtube, video_id):
 
     return response
 
-def get_video_comments(youtube, video_id):
+def yt_video_comments(youtube, video_id):
     try:
         next_page_token = None
         while True:
@@ -135,9 +135,9 @@ def main():
         my_bar.progress(15, "Connecting to MongoDB API")
         monodb_status, mg_collection = mongodb_connection()
         my_bar.progress(20, "Getting Channel ID")
-        channel_id = get_channel_id(youtube, channel_name)
+        channel_id = yt_channel_id(youtube, channel_name)
         my_bar.progress(25, "Getting Channel Details")
-        channel_details = get_channel_details(youtube, channel_id)
+        channel_details = yt_channel_details(youtube, channel_id)
         channel_info = {
             "channel_name": channel_details["items"][0]["snippet"]["title"],
             "channel_id": channel_details["items"][0]["id"],
@@ -151,7 +151,7 @@ def main():
                                                                                                              "Not Available")
         }
         my_bar.progress(40, "Getting Playlist Details")
-        playlist_details, playlist_ids = get_playlists(youtube, channel_id)
+        playlist_details, playlist_ids = yt_playlists(youtube, channel_id)
 
         for playlist_count, id in enumerate(playlist_details):
             playlist_id = id["id"]
@@ -161,14 +161,14 @@ def main():
                 "playlist_name_" + str(playlist_count): playlist_name
             })
             my_bar.progress(50, "Getting Video Details")
-            video_ids = get_video_details_for_playlist(youtube, playlist_id)
+            video_ids = yt_video_details(youtube, playlist_id)
             for video_count, video_id in enumerate(video_ids):
                 video_details = get_video_detail(youtube, video_id)
                 comments_info.clear()
                 if len(video_details["items"]) == 0:
                     continue
                 #my_bar.progress(60, "Getting Comment Details")
-                video_comments = get_video_comments(youtube, video_id)
+                video_comments = yt_video_comments(youtube, video_id)
                 if "items" in video_comments:
                     for comment_count, item in enumerate(video_comments["items"]):
                         comment = item["snippet"]["topLevelComment"]
