@@ -5,7 +5,7 @@ import datetime
 import mysql.connector
 from sqlalchemy import create_engine
 import re
-from config import DB_USERNAME, DB_PASSWORD, DB_NAME, COLLECTION_NAME
+from config import DB_USERNAME, DB_PASSWORD, DB_NAME, COLLECTION_NAME,SQL_USERNAME, SQL_PASSWORD, SQL_HOST, SQL_DATABASE
 
 def mongodb_connection():
 
@@ -25,17 +25,11 @@ def mongodb_connection():
     return status, collection
 
 def mysql_connection(video_tb,playlist_tb,comment_tb,channel_tb):
-    # Define your MySQL connection parameters
-    host = "localhost"
-    user = "root"
-    password = "root"
-    database = "ytharvesting"
 
-    connection = create_engine('mysql+pymysql://root:root@localhost/ytharvesting')
+    connection = create_engine(f'mysql+pymysql://{SQL_USERNAME}:{SQL_PASSWORD}@{SQL_HOST}/{SQL_DATABASE}')
 
     existing_channel_ids = set(pd.read_sql_query("SELECT channel_id FROM channel", connection)["channel_id"])
 
-    # Filter out duplicate rows before inserting
     channel_tb = channel_tb[~channel_tb["channel_id"].isin(existing_channel_ids)]
     if not channel_tb.empty:
         channel_tb.to_sql(
@@ -46,7 +40,6 @@ def mysql_connection(video_tb,playlist_tb,comment_tb,channel_tb):
         )
     existing_playlist_ids = set(pd.read_sql_query("SELECT playlist_id FROM playlist", connection)["playlist_id"])
 
-    # Filter out duplicate rows before inserting
     playlist_tb = playlist_tb[~playlist_tb["playlist_id"].isin(existing_playlist_ids)]
     if not channel_tb.empty:
         playlist_tb.to_sql(
@@ -70,7 +63,6 @@ def mysql_connection(video_tb,playlist_tb,comment_tb,channel_tb):
 
     existing_comment_ids = set(pd.read_sql_query("SELECT comment_id FROM comment", connection)["comment_id"])
 
-    # Filter out duplicate rows before inserting
     comment_tb = comment_tb[~comment_tb["comment_id"].isin(existing_comment_ids)]
     if not channel_tb.empty:
         comment_tb.to_sql(
@@ -85,7 +77,7 @@ def mysql_connection(video_tb,playlist_tb,comment_tb,channel_tb):
 
 def convert_duration(duration_str):
     hours = minutes = seconds = 0
-    # Use regex to extract hours, minutes, and seconds
+
     hours_match = re.search(r'(\d+)H', duration_str)
     if hours_match:
         hours = int(hours_match.group(1))
@@ -96,7 +88,6 @@ def convert_duration(duration_str):
     if seconds_match:
         seconds = int(seconds_match.group(1))
 
-    # Format as HH:MI:SS
     formatted_duration = f'{hours:02d}:{minutes:02d}:{seconds:02d}'
     return formatted_duration
 
