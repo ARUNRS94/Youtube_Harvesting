@@ -216,4 +216,3 @@ def main():
         print("collection_insert_status", collection_insert_status)
 if __name__ == "__main__":
     main()
-
