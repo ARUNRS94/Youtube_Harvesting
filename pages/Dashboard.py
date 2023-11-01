@@ -2,8 +2,9 @@ import streamlit as st
 from sqlalchemy import create_engine
 import pandas as pd
 import matplotlib.pyplot as plt
+from config import SQL_USERNAME, SQL_PASSWORD, SQL_HOST, SQL_DATABASE
 
-engine = create_engine('mysql+pymysql://root:root@localhost/ytharvesting')
+engine = create_engine(f'mysql+pymysql://{SQL_USERNAME}:{SQL_PASSWORD}@{SQL_HOST}/{SQL_DATABASE}')
 
 #1:Names of all videos and their corresponding channels
 query1 = """
